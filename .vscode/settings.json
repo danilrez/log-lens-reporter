@@ -1,0 +1,28 @@
+{
+	"cSpell.words": [
+		"basenames",
+		"beautifier",
+		"ehthumbs",
+		"ENOENT",
+		"loglens",
+		"loglensreporter",
+		"mocharc",
+		"njsproj",
+		"ntvs",
+		"playwright",
+		"pnpm",
+		"subtest",
+		"subtests",
+		"typeorm",
+		"vitest"
+	],
+	"cSpell.language": "en",
+	"workbench.colorCustomizations": {
+		"activityBar.background": "#4D586A",
+		"activityBar.foreground": "#F4F5F6",
+		"activityBar.activeBackground": "#4D586A",
+		"activityBar.inactiveForeground": "#888F9B",
+		"activityBarBadge.background": "#C8CBD1",
+		"activityBarBadge.foreground": "#4D586A"
+	}
+}
