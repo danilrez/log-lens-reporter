@@ -68,7 +68,3 @@ The npm package requires Node.js 20 or newer.
 | Mocha       | `log-lens-reporter/mocha`      | Mocha 10+                               | [Setup and options](https://github.com/danilrez/log-lens-reporter/blob/main/docs/mocha.md)      |
 | Playwright  | `log-lens-reporter/playwright` | Playwright 1.58-compatible reporter API | [Setup and options](https://github.com/danilrez/log-lens-reporter/blob/main/docs/playwright.md) |
 | Go          | `log-lens-reporter/go`         | Go available on `PATH`                  | [Setup and options](https://github.com/danilrez/log-lens-reporter/blob/main/docs/go.md)         |
-
-## License
-
-MIT
