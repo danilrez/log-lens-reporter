@@ -1,0 +1,76 @@
+# Node.js test runner integration
+
+The Node.js adapter consumes the built-in `node:test` event stream. It requires Node.js 20 or newer and has no dependency on a third-party test framework.
+
+Failed test details are grouped directly below their file's `FAILED` row.
+
+## Basic setup
+
+Run the test runner with the package subpath as its reporter:
+
+```bash
+node --test --test-reporter=log-lens-reporter/node
+```
+
+For a package script:
+
+```json
+{
+  "scripts": {
+    "test": "node --test --test-reporter=log-lens-reporter/node"
+  }
+}
+```
+
+The reporter groups leaf tests by file, maps failed events to `FAILED`, and maps `skip` and `todo` events to `SKIPPED`. Node.js keeps control of the final exit code.
+
+## Project configuration
+
+The Node.js CLI does not pass an options object, so the root `loglensreporter.config.json` is the simplest way to configure it:
+
+```json
+{
+  "borderStyle": "double",
+  "node": {
+    "kind": "UNIT",
+    "title": "NODE SERVICE TESTS",
+    "borderStyle": "single"
+  }
+}
+```
+
+The `node` section overrides shared root values. A local wrapper is needed only when inline or function-valued options are required:
+
+```js
+// test/log-lens-reporter.cjs
+const logLens = require('log-lens-reporter/node');
+
+module.exports = (source) =>
+  logLens(source, {
+    title: 'NODE SERVICE TESTS',
+    showDescription: true,
+    kind: 'UNIT',
+    color: true,
+    border: false,
+    borderStyle: 'single',
+    links: {
+      mode: 'auto',
+    },
+  });
+```
+
+Then point the CLI at the wrapper:
+
+```bash
+node --test --test-reporter=./test/log-lens-reporter.cjs
+```
+
+## Node-specific options
+
+| Option            | Type      | Default           | Description                                           |
+| ----------------- | --------- | ----------------- | ----------------------------------------------------- |
+| `kind`            | `string`  | `'UNIT'`          | Prefix and accent category for the run.               |
+| `title`           | `string`  | `'NODE TEST RUN'` | Header title, limited to the shared text width.       |
+| `showDescription` | `boolean` | `true`            | Shows generated provider, base path, and test counts. |
+
+See the [configuration reference](configuration.md) for all shared options and defaults.
