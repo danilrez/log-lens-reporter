@@ -1,6 +1,6 @@
 # Mocha integration
 
-The Mocha adapter supports JavaScript and TypeScript projects on Mocha 10 or newer. It prints one progress row per file, preserves final failure diagnostics, and marks a passing retried test as `FLAKY`.
+The Mocha adapter supports JavaScript and TypeScript projects that use Mocha 10 or newer. It prints one progress row per file, keeps final failure details, and marks a passing retried test as `FLAKY`.
 
 Final failure details are grouped directly below their file's `FAILED` row.
 

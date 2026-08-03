@@ -1,6 +1,6 @@
 # Go integration
 
-The Go adapter runs `go test -json`, maps top-level tests and subtests to source files, preserves package build failures, forwards termination signals, and returns the child process exit evidence.
+The Go adapter runs `go test -json` and maps top-level tests and subtests to source files. It keeps package build failures, forwards termination signals, and returns the child process exit details.
 
 Failed test details are grouped directly below their `FAILED` file row. Package and build failures without a source test remain standalone diagnostics.
 
@@ -63,7 +63,7 @@ runGoTests({ directory: 'backend' })
 | `title`           | `string`            | `'NATIVE GO TEST RUN'` | Header title.                                         |
 | `showDescription` | `boolean`           | `true`                 | Shows generated provider, base path, and test counts. |
 
-The generated header metadata reflects the tests selected by `packages`, `-run`, and `-skip`. For example, a run limited to `./internal/store` reports that directory as its base path instead of the whole Go module.
+The generated header metadata reflects the tests selected by `packages`, `-run`, and `-skip`. For example, a run limited to `./internal/store` uses that directory as its base path instead of the whole Go module.
 
 ## Project configuration and overrides
 

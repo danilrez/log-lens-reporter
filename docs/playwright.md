@@ -1,6 +1,6 @@
 # Playwright integration
 
-The Playwright adapter groups final results by source file, includes all retry durations, distinguishes flaky and timed-out outcomes, and prints errors and attachment paths.
+The Playwright adapter groups final results by source file and includes the duration of every retry. It distinguishes flaky and timed-out results and prints errors and attachment paths.
 
 Failed and timed-out test details, including artifact paths, are grouped directly below their file result row. Global reporter errors remain standalone diagnostics.
 
@@ -59,7 +59,7 @@ export default defineConfig({
 | `classifyPath`            | `(path: string) => string` | built-in classifier     | Selects a category from a source path.                     |
 | `ensureOutputDirectories` | `boolean`                  | `true`                  | Recreates Playwright output directories before completion. |
 
-The generated base path is inferred from every file in the current run. Mixed-category runs therefore report their nearest shared test root, while `primaryKind` continues to control the complete run rail and summary accent.
+The generated base path is based on every file in the current run. Mixed-category runs show their nearest shared test root. `primaryKind` still controls the full-run rail and summary accent.
 
 ## Project configuration and overrides
 

@@ -1,6 +1,6 @@
 # Node.js test runner integration
 
-The Node.js adapter consumes the built-in `node:test` event stream. It requires Node.js 20 or newer and has no dependency on a third-party test framework.
+The Node.js adapter reads the built-in `node:test` event stream. It requires Node.js 20 or newer and does not depend on a third-party test framework.
 
 Failed test details are grouped directly below their file's `FAILED` row.
 

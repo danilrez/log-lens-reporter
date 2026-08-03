@@ -6,7 +6,7 @@ Public documentation and issue tracking are available in the [public repository]
 
 ## Default output
 
-The default presentation uses colors, Unicode double borders, category-specific prefixes, and clickable file basenames in supported terminals. The header, progress body, and summary are rendered as connected equal-width sections that share borders and adapt to the terminal.
+The default presentation uses colors, Unicode double borders, category-specific prefixes, and clickable file names in supported terminals. The header, progress body, and summary use connected sections of equal width. They share borders and adapt to the terminal width.
 
 ```text
 ╔════════════════════════════════════════════════════════════╗
@@ -16,7 +16,7 @@ The default presentation uses colors, Unicode double borders, category-specific 
 ║   UNIT  tests/auth.spec.ts  ·  8 tests · 42ms · PASSED     ║
 ║   UNIT  tests/store.spec.ts ·  6 tests · 91ms · FAILED     ║
 ╟────────────────────────────────────────────────────────────╢
-║  TEST RUN SUMMARY                                          ║
+║  SUMMARY                                                   ║
 ╟┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╢
 ║  Result: FAILED · Duration: 184ms · Passed: 13 · Failed: 1 ║
 ║  Timed out: 0 · Flaky: 0 · Skipped: 0                      ║
@@ -25,36 +25,37 @@ The default presentation uses colors, Unicode double borders, category-specific 
 
 ## Install
 
-| Package manager | Latest                                     | Beta                                            |
-| --------------- | ------------------------------------------ | ----------------------------------------------- |
-| npm             | `npm install --save-dev log-lens-reporter` | `npm install --save-dev log-lens-reporter@beta` |
-| Yarn            | `yarn add --dev log-lens-reporter`         | `yarn add --dev log-lens-reporter@beta`         |
-| pnpm            | `pnpm add -D log-lens-reporter`            | `pnpm add -D log-lens-reporter@beta`            |
+| Package manager | Command                                    |
+| --------------- | ------------------------------------------ |
+| npm             | `npm install --save-dev log-lens-reporter` |
+| yarn            | `yarn add --dev log-lens-reporter`         |
+| pnpm            | `pnpm add -D log-lens-reporter`            |
 
 ## Configuration
 
 All adapters use the same presentation options:
 
-| Option            | Accepted values             | Default          | Description                                                  |
-| ----------------- | --------------------------- | ---------------- | ------------------------------------------------------------ |
-| `color`           | `true`, `false`             | `true`           | Enables or disables ANSI colors                              |
-| `border`          | `true`, `false`             | `true`           | Enables or disables the Unicode frame                        |
-| `borderStyle`     | `'double'`, `'single'`      | `'double'`       | Produces `╔══╗` or `┌──┐` when borders are enabled           |
-| `sectionWidth`    | `number`                    | terminal         | Sets the shared inner width for all three blocks             |
-| `showDescription` | `boolean`                   | `true`           | Shows generated provider, base path, file, and test metadata |
-| `terminalWidth`   | `number`                    | detected         | Overrides terminal detection                                 |
-| `terminalMargin`  | `number`                    | `4`              | Keeps output away from the terminal auto-wrap edge           |
-| `pathWidth`       | `number`                    | available space  | Optionally limits the path column before adaptive shortening |
-| `links`           | `boolean`, `LinkConfig`     | automatic        | Controls clickable file links                                |
-| `kindStyles`      | `Record<string, KindStyle>` | built-in palette | Customizes category colors                                   |
+| Option            | Accepted values                      | Default          | Description                                                  |
+| ----------------- | ------------------------------------ | ---------------- | ------------------------------------------------------------ |
+| `color`           | `true`, `false`                      | `true`           | Enables or disables ANSI colors                              |
+| `border`          | `true`, `false`                      | `true`           | Enables or disables the Unicode frame                        |
+| `borderStyle`     | `'double'`, `'single'`               | `'double'`       | Produces `╔══╗` or `┌──┐` when borders are enabled           |
+| `sectionWidth`    | `number`                             | terminal         | Sets the shared inner width for all three blocks             |
+| `showDescription` | `boolean`                            | `true`           | Shows generated provider, base path, file, and test metadata |
+| `terminalWidth`   | `number`                             | detected         | Overrides terminal detection                                 |
+| `terminalMargin`  | `number`                             | `4`              | Keeps output away from the terminal auto-wrap edge           |
+| `pathWidth`       | `number`                             | available space  | Optionally limits the path column before adaptive shortening |
+| `links`           | `boolean`, `LinkConfig`              | automatic        | Controls clickable file links                                |
+| `kindStyles`      | `Record<string, KindStyle>`          | built-in palette | Customizes category colors                                   |
+| `reportDetail`    | `'full'`, `'summary'`, or `'status'` | `'full'`         | Selects the full report, summary block, or one status line   |
 
 See the [configuration reference](https://github.com/danilrez/log-lens-reporter/blob/main/docs/configuration.md) for complete types, color support, link settings, custom categories, and examples.
 
-Projects with several runners can add one `loglensreporter.config.json` at the repository root. Root options apply to every adapter, provider sections override them, and inline reporter options have the highest priority. See [project configuration](https://github.com/danilrez/log-lens-reporter/blob/main/docs/configuration.md#project-configuration) for the schema and discovery rules.
+Projects with several runners can add one `loglensreporter.config.json` at the repository root. Root options apply to every adapter. Provider sections override the root options, and inline reporter options have the highest priority. See [project configuration](https://github.com/danilrez/log-lens-reporter/blob/main/docs/configuration.md#project-configuration) for the schema and discovery rules.
 
 ## Execution progress
 
-The optional [`log-lens-reporter/run`](https://github.com/danilrez/log-lens-reporter/blob/main/docs/execution.md) entry point runs external test or build stages with separate preparation and execution loader labels. When a connected reporter knows the test count, the loader also shows a live percentage and completed-test count. Hidden warning summaries link to details in a configurable local log directory.
+The optional [`log-lens-reporter/run`](https://github.com/danilrez/log-lens-reporter/blob/main/docs/execution.md) entry point runs external test or build stages. It shows separate loader labels for preparation and execution. Full reports can be printed after completion or streamed one stable file row at a time. Compact summary and status reports remain buffered while the loader shows the live percentage and completed test count. Hidden warning summaries link to details in a configurable local log directory.
 
 ## Runner integrations
 

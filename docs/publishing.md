@@ -1,6 +1,16 @@
 # Publishing releases
 
-Publish a beta first. Validate it in an unrelated repository before assigning the stable `latest` tag.
+Validate every release in an unrelated repository before publishing it with the stable `latest` tag. The private repository is the release source of truth. Sync public documentation only from the committed release state on private `main`.
+
+## Repository release sequence
+
+1. Verify that private `main` is clean, up to date, and green in CI.
+2. Set the exact release version. Update the changelog and documentation, run the full release checklist, and commit the private release state.
+3. Sync public documentation from the committed private `main` state. Record the same version in the public changelog. Review the full public diff and commit it.
+4. Wait for explicit user confirmation after both release commits have been reviewed.
+5. Only then create tags, create a GitHub release, or publish to npm.
+
+Do not sync the public repository from a feature or release branch.
 
 ## npm account preparation
 
@@ -11,65 +21,49 @@ npm whoami
 
 Direct publication requires the npm account's current publishing authentication requirements, including 2FA when configured.
 
+Do not continue when `npm whoami` fails.
+
 ## Release checklist
 
 ```bash
 pnpm run check
 pnpm test
 pnpm run build
-npm pack --dry-run
+pnpm pack --pack-destination <temporary-directory>
 npm publish --dry-run
 ```
 
-Review the tarball list for secrets, local paths, fixtures, generated caches, and missing declarations.
-The build minifies every generated JavaScript file without publishing source maps and fails if CommonJS or ESM export shapes change. Consumer validation must still load every public entry point from the packed artifact.
+Review the tarball file list for secrets, local paths, fixtures, generated caches, and missing type declarations.
 
-## Publish the beta
+The build minifies every generated JavaScript file without publishing source maps. It fails if CommonJS or ESM export shapes change. Consumer validation must also load every public entry point from the packed artifact.
 
-The package version must be a prerelease such as `0.1.0-beta.0`.
+## Publish stable
+
+Confirm that `package.json` already contains the intended stable version. For the `1.0.0` release, set it only if it has not already been prepared:
 
 ```bash
-npm publish --tag beta
+npm version 1.0.0 --no-git-tag-version
 ```
 
-Do not use plain `npm publish` for a prerelease because npm assigns the `latest` tag by default.
+Then run the full checklist against that exact version:
 
-Verify the registry state:
+```bash
+pnpm run check
+pnpm test
+pnpm run build
+npm pack --pack-destination <temporary-directory>
+npm publish --dry-run
+```
+
+Install and verify the final packed artifact. Sync and review both release commits, then wait for explicit approval. After approval, run `npm publish`. This command assigns the stable version to `latest`.
+
+Verify the registry state after publishing:
 
 ```bash
 npm view log-lens-reporter version dist-tags
 ```
 
-Consumers install the beta with:
-
-```bash
-pnpm add -D log-lens-reporter@beta
-```
-
-## Publish another beta
-
-Published versions are immutable. Increment the prerelease without creating a Git commit or tag automatically:
-
-```bash
-npm version prerelease --preid=beta --no-git-tag-version
-```
-
-Then repeat the release checklist and publish with `--tag beta`.
-
-## Publish stable
-
-After external beta validation:
-
-```bash
-npm version 0.1.0 --no-git-tag-version
-pnpm run check
-pnpm test
-pnpm run build
-npm publish --dry-run
-npm publish
-```
-
-Plain `npm publish` assigns the stable version to `latest`.
+Published versions are immutable. Increment the package version before preparing another release.
 
 ## Visibility
 

@@ -1,0 +1,41 @@
+{
+  "name": "log-lens-reporter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A unified terminal reporter for clear, consistent, and actionable test output.",
+  "keywords": [
+    "test",
+    "testing",
+    "reporter",
+    "test-reporter",
+    "test-runner",
+    "terminal-reporter",
+    "formatter",
+    "vitest",
+    "jest",
+    "mocha",
+    "node-test",
+    "playwright",
+    "playwright-reporter",
+    "go-test",
+    "golang",
+    "typescript",
+    "terminal",
+    "cli",
+    "ci",
+    "ansi-colors"
+  ],
+  "author": "Danil Reznichenko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danilrez/log-lens-reporter.git"
+  },
+  "homepage": "https://github.com/danilrez/log-lens-reporter#readme",
+  "bugs": {
+    "url": "https://github.com/danilrez/log-lens-reporter/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

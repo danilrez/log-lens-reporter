@@ -1,6 +1,6 @@
 # Jest integration
 
-The Jest adapter supports JavaScript and TypeScript projects that run on Jest 30. It prints one result row per test file, failure diagnostics, retry-aware totals, and the shared `log-lens-reporter` summary.
+The Jest adapter supports JavaScript and TypeScript projects that use Jest 30. It prints one result row per test file, failure details, totals that include retries, and the shared `log-lens-reporter` summary.
 
 Failed assertions and test-file errors are grouped directly below their file's `FAILED` row. Global run errors remain standalone diagnostics.
 
@@ -22,7 +22,7 @@ module.exports = {
 };
 ```
 
-Keeping both produces duplicate progress output, so the single `log-lens-reporter` reporter is the normal setup.
+Keeping both produces duplicate progress output. In most cases, use only the `log-lens-reporter` reporter.
 
 ## Configuration
 

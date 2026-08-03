@@ -1,6 +1,6 @@
 # Vitest integration
 
-The Vitest adapter targets the Vitest 4 reporter lifecycle. It aggregates completed test cases into one row per module, reports retries as flaky, keeps failure diagnostics, and prints one final summary.
+The Vitest adapter supports the Vitest 4 reporter lifecycle. It groups completed test cases into one row per module, reports successful retries as flaky, keeps failure details, and prints one final summary.
 
 Failed test details are grouped directly below their module's `FAILED` row. Unhandled run errors remain standalone diagnostics.
 
