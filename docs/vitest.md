@@ -56,11 +56,18 @@ export default defineConfig({
 
 ## Vitest-specific options
 
-| Option            | Type      | Default             | Description                                           |
-| ----------------- | --------- | ------------------- | ----------------------------------------------------- |
-| `kind`            | `string`  | `'UNIT'`            | Prefix and accent category for the run.               |
-| `title`           | `string`  | `'VITEST TEST RUN'` | Header title, limited to the shared text width.       |
-| `showDescription` | `boolean` | `true`              | Shows generated provider, base path, and test counts. |
+| Option               | Type      | Default                                 | Description                                                         |
+| -------------------- | --------- | --------------------------------------- | ------------------------------------------------------------------- |
+| `kind`               | `string`  | `'UNIT'`                                | Prefix and accent category for the run.                             |
+| `title`              | `string`  | `'VITEST TEST RUN'`                     | Header title, limited to the shared text width.                     |
+| `showDescription`    | `boolean` | `true`                                  | Shows generated provider, base path, and test counts.               |
+| `failureSummaryPath` | `string`  | `~/.loglensreporter/failure-summary.md` | Markdown report path; written for failed, flaky, or timed-out runs. |
+
+If omitted, the report uses `~/.loglensreporter/failure-summary.md`. Configure `execution.logDirectory` to move the default file, pass an explicit path to choose another file, or use an empty string to disable it.
+
+## Structured failure diagnostics
+
+Failed and flaky test cases are rendered below their module row with the test title, retry count, normalized failure message, assertion `Expected`/`Received` values, call log, and stack trace when Vitest provides them. Module errors and unhandled run errors remain standalone diagnostics. `todo`, `pending`, and skipped cases are reported as `SKIPPED` and are not treated as failures.
 
 ## Project configuration and overrides
 

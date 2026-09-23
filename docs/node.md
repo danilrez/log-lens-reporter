@@ -67,10 +67,17 @@ node --test --test-reporter=./test/log-lens-reporter.cjs
 
 ## Node-specific options
 
-| Option            | Type      | Default           | Description                                           |
-| ----------------- | --------- | ----------------- | ----------------------------------------------------- |
-| `kind`            | `string`  | `'UNIT'`          | Prefix and accent category for the run.               |
-| `title`           | `string`  | `'NODE TEST RUN'` | Header title, limited to the shared text width.       |
-| `showDescription` | `boolean` | `true`            | Shows generated provider, base path, and test counts. |
+| Option               | Type      | Default                                 | Description                                                         |
+| -------------------- | --------- | --------------------------------------- | ------------------------------------------------------------------- |
+| `kind`               | `string`  | `'UNIT'`                                | Prefix and accent category for the run.                             |
+| `title`              | `string`  | `'NODE TEST RUN'`                       | Header title, limited to the shared text width.                     |
+| `showDescription`    | `boolean` | `true`                                  | Shows generated provider, base path, and test counts.               |
+| `failureSummaryPath` | `string`  | `~/.loglensreporter/failure-summary.md` | Markdown report path; written for failed, flaky, or timed-out runs. |
+
+If omitted, the report uses `~/.loglensreporter/failure-summary.md`. Configure `execution.logDirectory` to move the default file, pass an explicit path to choose another file, or use an empty string to disable it.
+
+## Structured failure diagnostics
+
+The adapter groups `node:test` attempts by test identity and file. Failed and flaky tests retain the error message, assertion `Expected`/`Received` values, call log, stack trace, and retry count when present in the event stream; structured details from every failed attempt are merged into the single diagnostic. A run containing only recovered retries is reported as `FLAKY`, not `PASSED`. `skip` and `todo` events are reported as `SKIPPED`; Node.js continues to own the process exit code.
 
 See the [configuration reference](configuration.md) for all shared options and defaults.

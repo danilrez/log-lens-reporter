@@ -51,15 +51,20 @@ export default defineConfig({
 
 ## Playwright-specific options
 
-| Option                    | Type                       | Default                 | Description                                                |
-| ------------------------- | -------------------------- | ----------------------- | ---------------------------------------------------------- |
-| `title`                   | `string`                   | `'PLAYWRIGHT TEST RUN'` | Header title.                                              |
-| `showDescription`         | `boolean`                  | `true`                  | Shows generated provider, base path, and test counts.      |
-| `primaryKind`             | `string`                   | first test category     | Accent used for the complete run rail and summary.         |
-| `classifyPath`            | `(path: string) => string` | built-in classifier     | Selects a category from a source path.                     |
-| `ensureOutputDirectories` | `boolean`                  | `true`                  | Recreates Playwright output directories before completion. |
+| Option                    | Type                       | Default                                 | Description                                                         |
+| ------------------------- | -------------------------- | --------------------------------------- | ------------------------------------------------------------------- |
+| `title`                   | `string`                   | `'PLAYWRIGHT TEST RUN'`                 | Header title.                                                       |
+| `showDescription`         | `boolean`                  | `true`                                  | Shows generated provider, base path, and test counts.               |
+| `primaryKind`             | `string`                   | first test category                     | Accent used for the complete run rail and summary.                  |
+| `classifyPath`            | `(path: string) => string` | built-in classifier                     | Selects a category from a source path.                              |
+| `ensureOutputDirectories` | `boolean`                  | `true`                                  | Recreates Playwright output directories before completion.          |
+| `failureSummaryPath`      | `string`                   | `~/.loglensreporter/failure-summary.md` | Markdown report path; written for failed, flaky, or timed-out runs. |
 
 The generated base path is based on every file in the current run. Mixed-category runs show their nearest shared test root. `primaryKind` still controls the full-run rail and summary accent.
+
+## Structured failure diagnostics
+
+When a test fails across retries, attempts and attachments (`error-context.md`, `trace.zip`, screenshots) are aggregated into a single nested failure block with a retry counter `(× N retries)`. Error messages, assertion diffs, call logs, and stack frames are preserved when Playwright provides them. Global reporter errors remain standalone. By default, a Markdown summary is written to `~/.loglensreporter/failure-summary.md` when the run contains failed, flaky, or timed-out tests. Configure `execution.logDirectory` to move the default file, pass an explicit `failureSummaryPath` for another path, or use an empty string to disable it.
 
 ## Project configuration and overrides
 

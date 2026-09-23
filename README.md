@@ -23,6 +23,14 @@ The default presentation uses colors, Unicode double borders, category-specific 
 ╚════════════════════════════════════════════════════════════╝
 ```
 
+## Failure diagnostics
+
+Failed file rows include one nested diagnostic block per failed or flaky test. The shared diagnostic model preserves the failure message, `Expected`/`Received` values (including explicit empty, whitespace-only, and `null` values), call log, stack trace, retry count, and runner attachments when the adapter provides them. Global runner and process errors remain standalone diagnostics instead of being attached to the last test file.
+
+Playwright combines retry attempts and attachments for the same test into one block. Vitest, Jest, Mocha, Node.js, and Go adapters map their runner-specific assertion and process errors into the same format. Infrastructure output from `runStage` is captured and filtered in `auto`/`progress` mode; use `verbose` when raw child output is required.
+
+Failed, flaky, and timed-out runs also produce a Markdown failure summary at `~/.loglensreporter/failure-summary.md`. Set `failureSummaryPath` to choose another path, set it to `''` to disable the artifact, or pass one `FailureSummaryCollector` to multiple `runStage` calls to combine their failures.
+
 ## Install
 
 | Package manager | Command                                    |
@@ -35,27 +43,30 @@ The default presentation uses colors, Unicode double borders, category-specific 
 
 All adapters use the same presentation options:
 
-| Option            | Accepted values                      | Default          | Description                                                  |
-| ----------------- | ------------------------------------ | ---------------- | ------------------------------------------------------------ |
-| `color`           | `true`, `false`                      | `true`           | Enables or disables ANSI colors                              |
-| `border`          | `true`, `false`                      | `true`           | Enables or disables the Unicode frame                        |
-| `borderStyle`     | `'double'`, `'single'`               | `'double'`       | Produces `╔══╗` or `┌──┐` when borders are enabled           |
-| `sectionWidth`    | `number`                             | terminal         | Sets the shared inner width for all three blocks             |
-| `showDescription` | `boolean`                            | `true`           | Shows generated provider, base path, file, and test metadata |
-| `terminalWidth`   | `number`                             | detected         | Overrides terminal detection                                 |
-| `terminalMargin`  | `number`                             | `4`              | Keeps output away from the terminal auto-wrap edge           |
-| `pathWidth`       | `number`                             | available space  | Optionally limits the path column before adaptive shortening |
-| `links`           | `boolean`, `LinkConfig`              | automatic        | Controls clickable file links                                |
-| `kindStyles`      | `Record<string, KindStyle>`          | built-in palette | Customizes category colors                                   |
-| `reportDetail`    | `'full'`, `'summary'`, or `'status'` | `'full'`         | Selects the full report, summary block, or one status line   |
+| Option               | Accepted values                      | Default                                 | Description                                                  |
+| -------------------- | ------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
+| `color`              | `true`, `false`                      | `true`                                  | Disables regular ANSI colors; critical emphasis remains      |
+| `border`             | `true`, `false`                      | `true`                                  | Enables or disables the Unicode frame                        |
+| `borderStyle`        | `'double'`, `'single'`               | `'double'`                              | Produces `╔══╗` or `┌──┐` when borders are enabled           |
+| `sectionWidth`       | `number`                             | terminal                                | Sets the shared inner width for all three blocks             |
+| `showDescription`    | `boolean`                            | `true`                                  | Shows generated provider, base path, file, and test metadata |
+| `terminalWidth`      | `number`                             | detected                                | Overrides terminal detection                                 |
+| `terminalMargin`     | `number`                             | `4`                                     | Keeps output away from the terminal auto-wrap edge           |
+| `pathWidth`          | `number`                             | available space                         | Optionally limits the path column before adaptive shortening |
+| `links`              | `boolean`, `LinkConfig`              | automatic                               | Controls clickable file links                                |
+| `kindStyles`         | `Record<string, KindStyle>`          | built-in palette                        | Customizes category colors                                   |
+| `reportDetail`       | `'full'`, `'summary'`, or `'status'` | `'full'`                                | Selects the full report, summary block, or one status line   |
+| `failureSummaryPath` | `string`                             | `~/.loglensreporter/failure-summary.md` | Markdown failure report path                                 |
 
 See the [configuration reference](https://github.com/danilrez/log-lens-reporter/blob/main/docs/configuration.md) for complete types, color support, link settings, custom categories, and examples.
 
 Projects with several runners can add one `loglensreporter.config.json` at the repository root. Root options apply to every adapter. Provider sections override the root options, and inline reporter options have the highest priority. See [project configuration](https://github.com/danilrez/log-lens-reporter/blob/main/docs/configuration.md#project-configuration) for the schema and discovery rules.
 
+Failed tests, flaky tests, and timed-out tests are written to `~/.loglensreporter/failure-summary.md` by default. The default report follows `execution.logDirectory` when that directory is configured. Set `failureSummaryPath` to choose another path, or set it to an empty string to disable the report.
+
 ## Execution progress
 
-The optional [`log-lens-reporter/run`](https://github.com/danilrez/log-lens-reporter/blob/main/docs/execution.md) entry point runs external test or build stages. It shows separate loader labels for preparation and execution. Full reports can be printed after completion or streamed one stable file row at a time. Compact summary and status reports remain buffered while the loader shows the live percentage and completed test count. Hidden warning summaries link to details in a configurable local log directory.
+The optional [`log-lens-reporter/run`](https://github.com/danilrez/log-lens-reporter/blob/main/docs/execution.md) entry point runs external test or build stages. It shows separate loader labels for preparation and execution. Full reports can be printed after completion or streamed one stable file row at a time. Compact summary and status reports remain buffered while the loader shows the live percentage and completed test count. Hidden warning summaries and Markdown failure reports use `~/.loglensreporter` by default and can be moved with `execution.logDirectory`.
 
 ## Runner integrations
 

@@ -4,20 +4,21 @@ All adapters accept the shared formatter options. Runner adapters add their own 
 
 ## Shared options
 
-| Option            | Type                              | Default          | Description                                                                |
-| ----------------- | --------------------------------- | ---------------- | -------------------------------------------------------------------------- |
-| `color`           | `boolean`                         | `true`           | Enables or disables reporter and execution-stage ANSI colors.              |
-| `border`          | `boolean`                         | `true`           | Enables or disables the Unicode frame.                                     |
-| `borderStyle`     | `'double' \| 'single'`            | `'double'`       | Selects double or single border weight.                                    |
-| `sectionWidth`    | `number`                          | terminal         | Sets the shared inner width for the header, body, and footer sections.     |
-| `showDescription` | `boolean`                         | `true`           | Shows generated provider, base path, file, and test metadata.              |
-| `terminalWidth`   | `number`                          | detected         | Overrides width detection for redirected output or deterministic tests.    |
-| `terminalMargin`  | `number`                          | `4`              | Reserves columns at the right edge to prevent terminal auto-wrap.          |
-| `pathWidth`       | `number`                          | available space  | Optionally limits the path column before adaptive shortening.              |
-| `links`           | `boolean \| LinkConfig`           | automatic        | Controls OSC 8 file links.                                                 |
-| `kindStyles`      | `Record<string, KindStyle>`       | built-in palette | Adds or overrides category colors.                                         |
-| `reportDetail`    | `'full' \| 'summary' \| 'status'` | `'full'`         | Controls report detail level (full report, summary block, or status line). |
-| `sink`            | `OutputSink`                      | `console`        | Replaces `console.log` and `console.error` for adapters.                   |
+| Option               | Type                              | Default                                 | Description                                                                      |
+| -------------------- | --------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------- |
+| `color`              | `boolean`                         | `true`                                  | Disables regular reporter and execution-stage colors; critical emphasis remains. |
+| `border`             | `boolean`                         | `true`                                  | Enables or disables the Unicode frame.                                           |
+| `borderStyle`        | `'double' \| 'single'`            | `'double'`                              | Selects double or single border weight.                                          |
+| `sectionWidth`       | `number`                          | terminal                                | Sets the shared inner width for the header, body, and footer sections.           |
+| `showDescription`    | `boolean`                         | `true`                                  | Shows generated provider, base path, file, and test metadata.                    |
+| `terminalWidth`      | `number`                          | detected                                | Overrides width detection for redirected output or deterministic tests.          |
+| `terminalMargin`     | `number`                          | `4`                                     | Reserves columns at the right edge to prevent terminal auto-wrap.                |
+| `pathWidth`          | `number`                          | available space                         | Optionally limits the path column before adaptive shortening.                    |
+| `links`              | `boolean \| LinkConfig`           | automatic                               | Controls OSC 8 file links.                                                       |
+| `kindStyles`         | `Record<string, KindStyle>`       | built-in palette                        | Adds or overrides category colors.                                               |
+| `reportDetail`       | `'full' \| 'summary' \| 'status'` | `'full'`                                | Controls report detail level (full report, summary block, or status line).       |
+| `failureSummaryPath` | `string`                          | `~/.loglensreporter/failure-summary.md` | Path for the standalone Markdown failure summary.                                |
+| `sink`               | `OutputSink`                      | `console`                               | Replaces `console.log` and `console.error` for adapters.                         |
 
 ### Default formatter options
 
@@ -36,6 +37,35 @@ All adapters accept the shared formatter options. Runner adapters add their own 
   },
 }
 ```
+
+### failureSummaryPath
+
+When omitted, every adapter resolves this option to `~/.loglensreporter/failure-summary.md`. The default file name is `failure-summary.md`; configuring `execution.logDirectory` moves the default report into that directory. Each adapter or `runStage` call is isolated by default. A passing independent run removes an older artifact at the target path. An explicit path overrides the default, and an empty string disables the report.
+
+`runStage` combines failures from multiple stages only when the same `FailureSummaryCollector` is explicitly passed to each call:
+
+```ts
+import { FailureSummaryCollector, runStage } from 'log-lens-reporter/run';
+
+const failureSummaryCollector = new FailureSummaryCollector();
+await runStage({ title: 'Unit tests', command: 'pnpm', args: ['test:unit'], failureSummaryCollector });
+await runStage({ title: 'Integration tests', command: 'pnpm', args: ['test:integration'], failureSummaryCollector });
+```
+
+The collector is a runtime option and is not configured in JSON. If a failure summary cannot be created, updated, or cleared, the adapter or `runStage` emits a warning through its existing error output. The original test result and child exit code are preserved.
+
+The report is created only when the run contains failed tests, flaky tests, or timed-out tests. Passing and skipped runs do not create a new Markdown report. In CI, upload the explicit path as an artifact when a repository-local location is preferred:
+
+```yaml
+- uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: test-failures
+    path: test-failures.md
+    if-no-files-found: ignore
+```
+
+Failed tests are grouped by source file. Each entry includes the test title, optional retry count `(× N retries)`, the full error message, and attachment links for Playwright traces and screenshots.
 
 ### Report detail
 
@@ -66,8 +96,7 @@ Create an optional `loglensreporter.config.json` at the repository root to confi
     "mode": "auto",
     "commandOutput": "on-failure",
     "reportOutput": "after-completion",
-    "warnings": "summary",
-    "logDirectory": ".loglensreporter"
+    "warnings": "summary"
   },
   "vitest": {
     "kind": "UNIT",
@@ -97,6 +126,8 @@ reporters: [['log-lens-reporter/vitest', { borderStyle: 'double' }]];
 ```
 
 Configuration discovery starts in the runner working directory and moves upward until it finds the first `loglensreporter.config.json`. If no file exists, adapters use their built-in defaults. Invalid JSON, unknown keys, and invalid values produce an error with the full config path and option name.
+
+If `execution.logDirectory` is omitted, warning logs and the default Markdown failure report use `~/.loglensreporter`. Relative custom directories are resolved from the runner working directory; absolute paths are used as provided.
 
 Nested `links`, `kindStyles`, and Go `env` objects merge across the same precedence levels. JSON configuration cannot contain function-valued options: `sink` and Playwright `classifyPath` remain inline-only.
 
@@ -168,12 +199,14 @@ The same style is applied to headers, progress rails, diagnostics, and summary t
 
 ## Color policy
 
-Color is an explicit switch. The default is `true`; set it to `false` when plain output is required:
+Color is an explicit switch. The default is `true`. Set it to `false` to disable regular category, status, and progress colors:
 
 ```ts
 const colorsOn = { color: true } as const;
 const colorsOff = { color: false } as const;
 ```
+
+With `color: false`, run titles and provider metadata in full reports, run titles and result statuses in `reportDetail: 'status'`, `SUMMARY` headings and result statuses in every summary, and provider names in execution progress messages retain bold emphasis. Warnings remain yellow, while failed-stage messages and diagnostic labels remain red. This preserves critical visual cues in logs without applying the regular output palette.
 
 Built-in status colors:
 
