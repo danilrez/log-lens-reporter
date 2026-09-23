@@ -18,6 +18,10 @@ All notable changes to `log-lens-reporter` are documented in this file.
 
 - Standardized bold and color emphasis for status markers and labels, including when color output is disabled.
 
+### Package compatibility
+
+- Preserved CommonJS named exports in minified builds so ESM imports work consistently across supported Node.js versions.
+
 ## [1.0.0] - 2026-08-03
 
 Version 1.0.0 is the first stable release of `log-lens-reporter` and starts the official 1.x release line.
