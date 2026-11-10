@@ -2,6 +2,13 @@
 
 All notable changes to `log-lens-reporter` are documented in this file.
 
+## [1.0.2] - 2026-11-10
+
+### Test output
+
+- Improved progress reporting for parallel test runs.
+- Improved the readability and consistency of failure reports, including flaky test diagnostics and long attachment paths.
+
 ## [1.0.1] - 2026-09-23
 
 ### Failure diagnostics
